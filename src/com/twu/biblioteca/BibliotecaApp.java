@@ -41,5 +41,37 @@ public class BibliotecaApp {
 	    		}
 	    	menucode = 11;
 	    	}
+	    System.out.println("Press the book No. if you want to check-out the book.");
+	    // check out 
+	    int checkcode = 0; //see the book check out?
+	    while(checkcode == 0){
+		    inp =new Scanner(System.in);
+	        str = inp.nextLine();
+	        int booknum =  Integer.parseInt(str);
+	        if(bookstatus[booknum-1] != 0)
+	        	System.out.println("Sorry, the book had already beed checked out.");
+	        else{
+	        	//
+	        	System.out.println("Thank you! Enjoy the book.");
+	        	System.out.println("The detail book info of Book"+booknum+".");
+	        	bookstatus[booknum-1] = 1;
+	        	checkcode = 1;
+	        }
+        }
+	    //quitcode to see if quit.
+	    int quitcode = 0;
+	    while(quitcode == 0){
+	    	System.out.println("Press 101 to quit the system, otherwise move to the book list.");
+	    	inp =new Scanner(System.in);
+	        str = inp.nextLine();
+	        int quitnum =  Integer.parseInt(str);
+	        if (quitnum == 101)
+	        	quitcode = 1;
+	        else
+	        	for(int i = 0;i < 10; i++){
+		    		System.out.println("Book name: Book"+books[i]+". Status: "+(bookstatus[i]==0?"In Library":"Not in")+".");
+		    		}
+	    }
+	    System.out.println("Goodbye.");
     }
 }
