@@ -27,4 +27,12 @@ public class BookInfo {
     public String getYearPublished() {
         return yearPublished;
     }
+
+    public void setBorrowed() {
+        this.isBorrowed = true;
+    }
+
+    public boolean isBorrowed() {
+        return isBorrowed;
+    }
 }

@@ -7,12 +7,23 @@ public class MenuTool {
     private String menuName;
     private boolean isSelected;
 
-    public MenuTool(String menuName) {
+    MenuTool(String menuName) {
         this.menuName = menuName;
         isSelected = false;
     }
 
     public String getMenuName() {
         return menuName;
+    }
+
+    public void display() {
+
+    }
+
+    void setMenuSelected() {
+        this.isSelected = true;
+    }
+
+    public void displayDetail(int mendCode) {
     }
 }

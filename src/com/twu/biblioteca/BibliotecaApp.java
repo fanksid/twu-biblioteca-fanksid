@@ -2,30 +2,102 @@ package com.twu.biblioteca;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Stack;
+
+import com.twu.biblioteca.components.BookInfoMenu;
+import com.twu.biblioteca.exception.MenuInputException;
+import org.apache.commons.lang3.*;
 import com.twu.biblioteca.components.BookInfo;
 import com.twu.biblioteca.components.MenuTool;
 
 public class BibliotecaApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MenuInputException {
         List<BookInfo> bookInfos = prepareBooksInfo();
-        List<MenuTool> menuTools = prepareMenus();
+        List<MenuTool> menuTools = prepareMenus(bookInfos);
         System.out.println(showWelcomeMsg());
+        Scanner scanner = new Scanner(System.in);
+        showMenuTools(menuTools);
 
-        showBookListInfo(bookInfos);
+        Stack<Object> stack = new Stack<>();
+        stack.push("ROOT");
+
+        int mendCode;
+
+        while (!stack.isEmpty()){
+            String menuId = scanner.nextLine();
+            mendCode = getMenuCode(menuId);
+
+            if (mendCode == 0) {
+                stack.pop();
+                if (!stack.isEmpty()) {
+                    displayMenuDetail(stack);
+                }
+                continue;
+            }
+
+            Object menu = stack.peek();
+
+            if (menu instanceof String) {
+                MenuTool menuTool = displayMenu(menuTools, mendCode);
+                stack.push(menuTool);
+            }
+
+            if (menu instanceof MenuTool) {
+                ((MenuTool) menu).displayDetail(mendCode);
+            }
+
+        }
+
+    }
+
+    private static void displayMenuDetail(Stack<Object> stack) {
+        if (stack.isEmpty()) {
+            return;
+        }
+        Object menu = stack.peek();
+        if (menu instanceof String) {
+            showMenuTools(prepareMenus(prepareBooksInfo()));
+        }
+        else{
+            ((MenuTool) menu).display();
+        }
+    }
+
+    private static int getMenuCode(String menuId) throws MenuInputException {
+        int mendCode;
+        if (StringUtils.isNumeric(menuId)) {
+            mendCode = Integer.valueOf(menuId);
+        } else {
+            throw new MenuInputException("The input is illegal");
+        }
+        return mendCode;
+    }
+
+    private static MenuTool displayMenu(List<MenuTool> menuTools, Integer menuCode) throws MenuInputException {
+        if (menuCode == 0) {
+            return null;
+        }
+        if (menuCode > menuTools.size()) {
+            System.out.println("Select a valid option!");
+        }
+        MenuTool menuTool = menuTools.get(menuCode - 1);
+        menuTool.display();
+        return menuTool;
+    }
+
+    private static void showMenuTools(List<MenuTool> menuTools) {
+        System.out.println("Here is the Menu Option, please input the number to choose the menu.");
+        for (int i = 0; i < menuTools.size(); i++) {
+            MenuTool menuTool = menuTools.get(i);
+            String menuInfo = (i + 1) + ". " + menuTool.getMenuName();
+            System.out.println(menuInfo);
+        }
     }
 
     static String showWelcomeMsg() {
         return "Welcome to BibliotecaApp!";
-    }
-
-    private static void showBookListInfo(List<BookInfo> bookInfos) {
-        System.out.println("Here is the book list:");
-        for (int i = 0; i < bookInfos.size(); i++) {
-            BookInfo bookInfo = bookInfos.get(i);
-            System.out.println((i + 1) + ". " + bookInfo.getName() + ", " + bookInfo.getAuthor() + ", "
-                    + bookInfo.getYearPublished());
-        }
     }
 
     static List<BookInfo> prepareBooksInfo() {
@@ -43,10 +115,11 @@ public class BibliotecaApp {
         bookInfos.add(bookInfo3);
     }
 
-    static List<MenuTool> prepareMenus() {
+    static List<MenuTool> prepareMenus(List<BookInfo> bookInfos) {
         List<MenuTool> menuTools = new ArrayList<>();
-        MenuTool menuTool1 = new MenuTool("BookList");
-        menuTools.add(menuTool1);
+        BookInfoMenu bookInfoMenu = new BookInfoMenu("Show BookList");
+        bookInfoMenu.setBookInfos(bookInfos);
+        menuTools.add(bookInfoMenu);
         return menuTools;
     }
 }
